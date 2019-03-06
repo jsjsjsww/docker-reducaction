@@ -4,6 +4,7 @@ import com.neo.domain.CTModel;
 import com.neo.domain.TestSuite;
 import com.neo.service.Reduce;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,10 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/optimization")
 public class DockerController {
 	
-    @RequestMapping(value = "/reduce", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public TestSuite reduce(HttpServletRequest request) {
         BufferedReader br;
         StringBuilder sb;
@@ -47,7 +47,7 @@ public class DockerController {
         }
         JSONObject jsonObject = new JSONObject(reqBody);
         int parameters = (Integer)jsonObject.get("parameters");
-        int t = (Integer)jsonObject.get("t");
+        int t = (Integer)jsonObject.get("strength");
         JSONArray valuesJSONArray = (JSONArray) jsonObject.get("values");
         List list = valuesJSONArray.toList();
         int[] values = new int[list.size()];
@@ -71,5 +71,10 @@ public class DockerController {
         reduce.run();
         Instant end = Instant.now();
         return new TestSuite(reduce.getTestsuite(), Duration.between(start, end).toMillis());
+    }
+
+    @GetMapping("/check")
+    public String healthCheck(){
+        return "ok";
     }
 }
